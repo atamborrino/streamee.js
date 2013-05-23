@@ -1,0 +1,26 @@
+{
+  "name": "streamee",
+  "version": "0.0.1",
+  "description": "Ready-to-pipe stream transformers for node.js 1.0+",
+  "keywords": [],
+  "author": "Alexandre Tamborrino <tamborrino.alexandre@gmail.com>",
+  "repository": "git://github.com/atamborrino/streamee.git",
+  "main": "index",
+  "homepage": "https://github.com/atamborrino/streamee",
+  "bugs": {
+    "url": "https://github.com/atamborrino/streamee/issues"
+  },
+  "dependencies": {
+    "underscore": "1.4.4",
+    "q": "0.9.3"
+    },
+  "devDependencies": {
+     "mocha": "1.9.0",
+     "should": "1.2.2"
+  },
+  "licenses": [
+    {
+      "type": "Apache 2"
+    }
+  ]
+}
