@@ -32,7 +32,7 @@ Inspired from [Play Framework Enumeratee](http://www.playframework.com/documenta
 
 ## Installation
 
-## Integrating with other APIs that return streams
+## Integrate with other APIs that return streams
 Streamee.js uses node 1.0+ streams, so if you use an API that returns node 0.8 streams, you have to wrap them like this:
 ```js
 var stream = require('stream');
@@ -60,7 +60,7 @@ function GETstream(url) {
 }
 ```
 
-# API
+## API
 All transformers (map, filter, collect...) take as first parameter the type in which you want to handle the chunk in the transformation function. ```ee.bin``` is buffer (binary data), ```ee.str``` is string and ```ee.obj``` is an object. If a chunk is not
 convertible to the asked type, it will be dropped.
 
@@ -90,7 +90,7 @@ ee.map(ee.str, function(str) {
 ```js
 var request = require('request');
 
-// Helper function that GET a promise of the http response body
+// Helper function that does a http GET request and returns a promise of the response body
 function GET(url) {
   var deferred = Q.defer();
   request(url, function(err, res, body) {
@@ -143,6 +143,16 @@ ee.collect(ee.str, function(str) {
 
 ---------------------------------------
 
+### ee.encode(fromEncoding, toEncoding)
+Encode the chunks that were encoded in 'fromEncoding' to 'toEncoding'.
+
+**Example**
+```js
+var utf8stream = ee.encode('utf16le', 'utf8');
+```
+
+---------------------------------------
+
 ### ee.interleave(arrayOfReadableStreams)
 Interleave the readable streams passed in the array.
 
@@ -159,16 +169,6 @@ Flatten a Q.Promise[Readable] to a Readable stream.
 **Example**
 ```js
 var aStream = ee.flattenReadable(promiseOfReadableStream);
-```
-
----------------------------------------
-
-### ee.encode(fromEncoding, toEncoding)
-Encode the chunks that were encoded in 'fromEncoding' to 'toEncoding'.
-
-**Example**
-```js
-var utf8stream = ee.encode('utf16le', 'utf8');
 ```
 
 ---------------------------------------
@@ -190,5 +190,13 @@ ee.pipeAndRun(
 
 ---------------------------------------
 
-More to come!
+### More to come!
 
+## License
+This software is licensed under the Apache 2 license, quoted below.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
