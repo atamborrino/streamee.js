@@ -1,3 +1,4 @@
+'use strict';
 var stream = require('stream');
 var _ = require('underscore');
 var Q = require('q');
