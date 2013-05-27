@@ -1,6 +1,6 @@
 # streamee.js
 
-streamee.js is a set of stream transformers and composers for node.js that integrates seamlessly with Q promises. It can be seen as a mix of async and underscore.js, but for streams!
+Streamee.js is a set of stream transformers and composers for node.js that integrates seamlessly with Q promises. It can be seen as a mix of async and underscore.js, but for streams!
 
 One of the most useful feature of streams is **back-pressure**: if the bottom of the stream pipeline is slow (for example the Web client), then the top will automatically push slowly (for example your database and/or Web server), so that the memory consumption is optimal in node.  
 streamee.js allows you to build very easily pipelines that compose and transform streams, so that you can keep back-pressure all the way long in a nice functional programming style (less callback hell!). All transformation functions can return **Q promises** instead of direct value, which makes asynchronous operations less verbose and more functional.
@@ -34,7 +34,7 @@ Inspired from [Play Framework Enumeratee](http://www.playframework.com/documenta
 ## Installation
 
 ## Integrating with other APIs that return streams
-streamee.js uses node 1.0+ streams, so if you use an API that returns node 0.8 streams, you have to wrap them like this:
+Streamee.js uses node 1.0+ streams, so if you use an API that returns node 0.8 streams, you have to wrap them like this:
 ```js
 var stream = require('stream');
 var newStream = new stream.Readable().wrap(oldStream);
@@ -49,6 +49,7 @@ var objectStream = new stream.Readable({objectMode: true}).wrap(nonObjectStream)
 For example, here is a function that returns a chunked http response as an objectMode stream:
 ```js
 var http = require('http');
+var Q = require('q');
 
 // GET a http chunked stream (for example a stream of strings or json objects)
 function GETstream(url) {
@@ -73,7 +74,8 @@ Default encoding for all transformers is utf8. If a source or a destination has 
 ---------------------------------------
 
 ### ee.map(fromType, f)
-Map each chunk
+Map each chunk.
+
 **Arguments**
 *  fromType: ee.bin | ee.str | ee.obj
 *  f: function(chunk) - Must return the mapped chunk or a Promise of it
@@ -81,7 +83,8 @@ Map each chunk
 ---------------------------------------
 
 ### ee.filter(fromType, f)
-Keep only the chunks that pass the truth test f
+Keep only the chunks that pass the truth test f.
+
 **Arguments**
 *  fromType: ee.bin | ee.str | ee.obj
 *  f: function(chunk) - Must return a boolean value (indicating if the chunk is kept in the stream) or a Promise of it.
@@ -90,6 +93,7 @@ Keep only the chunks that pass the truth test f
 
 ### ee.collect(fromType, f)
 Collect is filter + map.
+
 **Arguments** 
 *  fromType: ee.bin | ee.str | ee.obj
 *  f: function(chunk) - For each chunk, if a value (or a Promise of it) is returned by f, then this chunk is kept in
@@ -99,10 +103,7 @@ undefined), the chunk is not kept.
 **Example**
 ```js
 ee.collect(ee.str, function(str) {
-  if (str.length > 10) {
-    return 'We keep' + str + 'and map it to this message';
-  }
-}
+  if (str.length > 10) return 'We keep ' + str + ' and map it to this message';
 })
 ```
 
@@ -110,6 +111,7 @@ ee.collect(ee.str, function(str) {
 
 ### ee.pipeAndRun(streams*)
 Take the streams passed in parameter and sequentially pipe them. Equivalent to stream1.pipe(stream2).pipe(...) ...
+
 **Example**
 ```js
 ee.pipeAndRun(
@@ -126,6 +128,7 @@ ee.pipeAndRun(
 
 ### ee.interleave(readableArray)
 Interleave the readable streams passed in the array.
+
 **Example**
 ```js
 var mixedStream = ee.interleave([stream1, stream2]);
@@ -135,6 +138,7 @@ var mixedStream = ee.interleave([stream1, stream2]);
 
 ### ee.flattenReadable(readable)
 Flatten a Q.Promise[Readable] to a Readable stream.
+
 **Example**
 ```js
 var aStream = ee.flattenReadable(promiseOfReadableStream);
@@ -144,10 +148,13 @@ var aStream = ee.flattenReadable(promiseOfReadableStream);
 
 ### ee.encode(fromEncoding, toEncoding)
 Encode the chunks that were encoded in 'fromEncoding' to 'toEncoding'.
+
 **Example**
 ```js
 var utf8stream = ee.encode('utf16le', 'utf8');
 ```
 
 ---------------------------------------
+
+More to come!
 
