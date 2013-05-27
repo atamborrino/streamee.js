@@ -1,8 +1,8 @@
 {
   "name": "streamee",
   "version": "0.0.1",
-  "description": "Ready-to-pipe stream transformers for node.js 1.0+",
-  "keywords": [],
+  "description": "Easy stream transformation and composition for node.js that integrates seamlessly with Q promises",
+  "keywords": ["stream", "promise", "functional", "transformation", "composition"],
   "author": "Alexandre Tamborrino <tamborrino.alexandre@gmail.com>",
   "repository": "git://github.com/atamborrino/streamee.git",
   "main": "index",

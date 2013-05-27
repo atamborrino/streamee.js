@@ -19,7 +19,6 @@ WritableMock.prototype = Object.create(
   stream.Writable.prototype, { constructor: { value: WritableMock }});
 
 WritableMock.prototype._write = function(chunk, encoding, done) {
-  console.log(chunk);
   if (this.obj) {
     this.sink.push(JSON.parse(chunk))
   } else {
@@ -147,7 +146,7 @@ describe('Filter', function() {
 })
 
 describe('Flatten', function() {
-  it('should flatten a readble stream', function(done) {
+  it('should flatten a readable stream', function(done) {
     var pStream = Q.fcall(function() {
       return read;
     });
@@ -159,8 +158,8 @@ describe('Flatten', function() {
   })
 })
 
-describe('Example pipeline', function() {
-  it('should collect asynchronously', function(done) {
+describe('PipeAndRun', function() {
+  it('should pipeline', function(done) {
     ee.pipeAndRun(
       readObj,
       ee.collect(ee.obj, function(obj) {
@@ -174,7 +173,6 @@ describe('Example pipeline', function() {
     );
     write.on('finish', function() {
       sink.should.have.length(1);
-      console.log(sink);
       (sink[0]).should.equal('data2');
       done();
     });
