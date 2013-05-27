@@ -1,22 +1,21 @@
 # streamee.js
 
-Streamee.js is a set of stream transformers and composers for node.js that integrates seamlessly with Q promises. It can be seen as a mix of async and underscore.js, but for streams!
+Streamee.js is a set of stream transformers and composers for node.js that integrates seamlessly with [Q promises](https://github.com/kriskowal/q). It can be seen as a mix of [async](https://github.com/caolan/async) and [underscore.js](http://underscorejs.org/), but for streams!
 
 One of the most useful feature of streams is **back-pressure**: if the bottom of the stream pipeline is slow (for example the Web client), then the top will automatically push slowly (for example your database and/or Web server), so that the memory consumption is optimal in node.  
-streamee.js allows you to build very easily pipelines that compose and transform streams, so that you can keep back-pressure all the way long in a nice functional programming style (less callback hell!). All transformation functions can return **Q promises** instead of direct value, which makes asynchronous operations less verbose and more functional.
+streamee.js allows you to build very easily pipelines that compose and transform streams, so that you can keep back-pressure all the way long in a nice functional programming style. All transformation functions can return **Q promises** instead of direct values, which makes asynchronous operations less verbose and more functional (less callback hell!).
 
 Example:
 ```js
 var ee = require('streamee');
 
-var stream1 = // Readable stream for example from a HTTP chunked response, a MongoDB response, ...
-var stream2 = // another readable stream
+var stream1 = // Readable stream, for example from a HTTP chunked response, a MongoDB response, ...
 var promiseOfStream = // sometimes, because of callbacks, we can only get a Q.Promise[Readable] instead of a Readable
-var stream3 = ee.flattenReadable(promiseOfStream) // well, now you can flatten it!
+var stream2 = ee.flattenReadable(promiseOfStream) // well, now you can flatten it!
 
 ee.pipeAndRun( // create a pipeline
-  ee.interleave([stream1, stream2, stream3]), // interleave the streams
-  ee.map(ee.obj, function(obj) { // ee.obj' means that we want to handle the chunk as a json object
+  ee.interleave([stream1, stream2]), // interleave the streams
+  ee.map(ee.obj, function(obj) { // 'ee.obj' means that we want to handle the chunk as a json object
     obj.newField = 'something useful'
     return obj; // return directly a value, so this is a sync map
   }),
@@ -43,7 +42,7 @@ var newStream = new stream.Readable().wrap(oldStream);
 If each chunk of your stream is a logical independent unit (for example a stream of json strings),
 you should create an 'objectMode' stream so that node's stream buffers does not automatically concatenate the chunks:
 ```js
-var objectStream = new stream.Readable({objectMode: true}).wrap(nonObjectStream);
+var objectModeStream = new stream.Readable({objectMode: true}).wrap(nonObjectModeStream);
 ```
 
 For example, here is a function that returns a chunked http response as an objectMode stream:
@@ -51,7 +50,7 @@ For example, here is a function that returns a chunked http response as an objec
 var http = require('http');
 var Q = require('q');
 
-// GET a http chunked stream (for example a stream of strings or json objects)
+// GET a http chunked stream (for example a stream of json strings)
 function GETstream(url) {
   var deferred = Q.defer();
   http.get(url, function(res) { 
@@ -83,13 +82,14 @@ Map each chunk.
 **Example**
 ```js
 ee.map(ee.str, function(str) {
-  return str + ' is mapped';
+  return str + ' is mapped to this message';
 })
 ```
 
-**Example with a promise***
+**Example with a promise**
 ```js
 var request = require('request');
+
 // Helper function that GET a promise of the http response body
 function GET(url) {
   var deferred = Q.defer();
@@ -102,7 +102,7 @@ function GET(url) {
 
 ee.map(ee.obj, function(obj) {
   return GET(obj.url).then(function(body) {
-    return obj + 'is mapped to ' + body;
+    return obj + ' is mapped to ' + body;
   });
 })
 ```
