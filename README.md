@@ -11,7 +11,7 @@ var ee = require('streamee');
 
 var stream1 = // Readable stream for example from a HTTP chunked response, a MongoDB response, ...
 var stream2 = // another readable stream
-var promiseOfStream = // sometimes, because of callbacks, we can only get a Q Promise[Readable] instead of a Readable
+var promiseOfStream = // sometimes, because of callbacks, we can only get a Q.Promise[Readable] instead of a Readable
 var stream3 = ee.flattenReadable(promiseOfStream) // well, now you can flatten it!
 
 ee.pipeAndRun( // create a pipeline
@@ -73,6 +73,7 @@ Default encoding for all transformers is utf8. If a source or a destination has 
 ---------------------------------------
 
 ### ee.map(fromType, f)
+Map each chunk
 **Arguments**
 *  fromType: ee.bin | ee.str | ee.obj
 *  f: function(chunk) - Must return the mapped chunk or a Promise of it
@@ -80,14 +81,73 @@ Default encoding for all transformers is utf8. If a source or a destination has 
 ---------------------------------------
 
 ### ee.filter(fromType, f)
-f: function(chunk) Must return a boolean value (*true* if we keep the chunk, *false* otherwise) or a Promise of it.
+Keep only the chunks that pass the truth test f
+**Arguments**
+*  fromType: ee.bin | ee.str | ee.obj
+*  f: function(chunk) - Must return a boolean value (indicating if the chunk is kept in the stream) or a Promise of it.
 
-### collect(from)
+---------------------------------------
+
+### ee.collect(fromType, f)
 Collect is filter + map.
-f: function(chunk) f is a partially applied function (return a value )
+**Arguments** 
+*  fromType: ee.bin | ee.str | ee.obj
+*  f: function(chunk) - For each chunk, if a value (or a Promise of it) is returned by f, then this chunk is kept in
+the stream and mapped to the returned value (or the value inside the Promise). If the function does not return (or return 
+undefined), the chunk is not kept.
 
+**Example**
+```js
+ee.collect(ee.str, function(str) {
+  if (str.length > 10) {
+    return 'We keep' + str + 'and map it to this message';
+  }
+}
+})
+```
 
+---------------------------------------
 
+### ee.pipeAndRun(streams*)
+Take the streams passed in parameter and sequentially pipe them. Equivalent to stream1.pipe(stream2).pipe(...) ...
+**Example**
+```js
+ee.pipeAndRun(
+  srcStream,
+  ee.map(ee.obj, function(obj) {
+    var mappedObj = // ...
+    return mappedObj;
+  }),
+  destinationStream
+);
+```
 
+---------------------------------------
 
+### ee.interleave(readableArray)
+Interleave the readable streams passed in the array.
+**Example**
+```js
+var mixedStream = ee.interleave([stream1, stream2]);
+```
+
+---------------------------------------
+
+### ee.flattenReadable(readable)
+Flatten a Q.Promise[Readable] to a Readable stream.
+**Example**
+```js
+var aStream = ee.flattenReadable(promiseOfReadableStream);
+```
+
+---------------------------------------
+
+### ee.encode(fromEncoding, toEncoding)
+Encode the chunks that were encoded in 'fromEncoding' to 'toEncoding'.
+**Example**
+```js
+var utf8stream = ee.encode('utf16le', 'utf8');
+```
+
+---------------------------------------
 

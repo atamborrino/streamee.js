@@ -52,7 +52,7 @@ Map.prototype._transform = function(chunk, encoding, done) {
         else self.push(JSON.stringify(value));
         done();
       }, function(err) {
-        console.error(errorMessage(chunk, err));
+        traceError(chunk, err);
         done();
       })
       .done(); 
@@ -64,7 +64,7 @@ Map.prototype._transform = function(chunk, encoding, done) {
       done();
     }
   } catch (err) {
-    console.error(errorMessage(chunk, err));
+    traceError(chunk, err);
     done();
   }
 
@@ -105,7 +105,7 @@ Filter.prototype._transform = function(chunk, encoding, done) {
         if (value) self.push(chunk)
         done();
       }, function(err) {
-        console.error(errorMessage(chunk, err));
+        traceError(chunk, err);
         done();
       })
       .done(); 
@@ -114,7 +114,7 @@ Filter.prototype._transform = function(chunk, encoding, done) {
       done();
     }
   } catch (err) {
-    console.error(errorMessage(chunk, err));
+    traceError(chunk, err);
     done();
   }
 };
@@ -187,9 +187,14 @@ Encode.prototype = Object.create(
   stream.Transform.prototype, { constructor: { value: Encode }});
 
 Encode.prototype._transform = function(chunk, encoding, done) {
-  if (Buffer.isBuffer) this.push(new Buffer(chunk.toString(this.from)), this.to)
-  else this.push(new Buffer(chunk, this.to));
-  done();
+  try {
+    if (Buffer.isBuffer) this.push(new Buffer(chunk.toString(this.from)), this.to)
+    else this.push(new Buffer(chunk, this.to));
+  } catch (err) {
+    traceError(chunk, err);
+  } finally {
+    done();
+  }
 }
 
 
@@ -214,7 +219,7 @@ function isPromise(p) {
   return _.isObject(p) && p.toString().slice(8, -1) === 'Promise';
 }
 
-function errorMessage(chunk, error) {
-  return 'Error: "' + error + '"" happened while processing chunk: ' + chunk;
+function traceError(chunk, error) {
+  console.error('Error: "' + error + '"" happened while processing chunk: ' + chunk);
 }
 
