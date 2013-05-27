@@ -80,6 +80,33 @@ Map each chunk.
 *  fromType: ee.bin | ee.str | ee.obj
 *  f: function(chunk) - Must return the mapped chunk or a Promise of it
 
+**Example**
+```js
+ee.map(ee.str, function(str) {
+  return str + ' is mapped';
+})
+```
+
+**Example with a promise***
+```js
+var request = require('request');
+// Helper function that GET a promise of the http response body
+function GET(url) {
+  var deferred = Q.defer();
+  request(url, function(err, res, body) {
+    if (!err && res.statusCode == 200) deferred.resolve(body)
+    else deferred.reject(err);
+  });
+  return deferred.promise;
+}
+
+ee.map(ee.obj, function(obj) {
+  return GET(obj.url).then(function(body) {
+    return obj + 'is mapped to ' + body;
+  });
+})
+```
+
 ---------------------------------------
 
 ### ee.filter(fromType, f)
@@ -88,6 +115,13 @@ Keep only the chunks that pass the truth test f.
 **Arguments**
 *  fromType: ee.bin | ee.str | ee.obj
 *  f: function(chunk) - Must return a boolean value (indicating if the chunk is kept in the stream) or a Promise of it.
+
+**Example**
+```js
+ee.map(ee.obj, function(obj) {
+  return obj.aField === 'someValue';
+})
+```
 
 ---------------------------------------
 
@@ -109,24 +143,7 @@ ee.collect(ee.str, function(str) {
 
 ---------------------------------------
 
-### ee.pipeAndRun(streams*)
-Take the streams passed in parameter and sequentially pipe them. Equivalent to stream1.pipe(stream2).pipe(...) ...
-
-**Example**
-```js
-ee.pipeAndRun(
-  srcStream,
-  ee.map(ee.obj, function(obj) {
-    var mappedObj = // ...
-    return mappedObj;
-  }),
-  destinationStream
-);
-```
-
----------------------------------------
-
-### ee.interleave(readableArray)
+### ee.interleave(arrayOfReadableStreams)
 Interleave the readable streams passed in the array.
 
 **Example**
@@ -152,6 +169,23 @@ Encode the chunks that were encoded in 'fromEncoding' to 'toEncoding'.
 **Example**
 ```js
 var utf8stream = ee.encode('utf16le', 'utf8');
+```
+
+---------------------------------------
+
+### ee.pipeAndRun(streams*)
+Take the streams passed in parameter and sequentially pipe them. Equivalent to stream1.pipe(stream2).pipe(...) ...
+
+**Example**
+```js
+ee.pipeAndRun(
+  srcStream,
+  ee.map(ee.obj, function(obj) {
+    var mappedObj = // ...
+    return mappedObj;
+  }),
+  destinationStream
+);
 ```
 
 ---------------------------------------
