@@ -31,6 +31,7 @@ ee.pipeAndRun( // create a pipeline
 Inspired from [Play Framework Enumeratee](http://www.playframework.com/documentation/2.1.1/Enumeratees).
 
 ## Installation
+```npm install streamee```
 
 ## Integrate with other APIs that return streams
 Streamee.js uses node 1.0+ streams, so if you use an API that returns node 0.8 streams, you have to wrap them like this:
