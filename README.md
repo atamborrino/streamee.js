@@ -21,8 +21,7 @@ ee.pipeAndRun( // create a pipeline
   }),
   ee.collect(ee.obj, function(obj) { // collect is filter + map
     if (obj.intField > 3 && obj.intField < 10) { // filter
-      return getPromiseOfData(obj); // async map by returning a Q promise. The promise can contain either an object 
-    }                               // or a string or a buffer
+      return getPromiseOfData(obj); // async map by returning a Q promise
   }),
   destination // Writable stream, for example a HTTP chunked response toward a Web client or a Websocket connection
 );
