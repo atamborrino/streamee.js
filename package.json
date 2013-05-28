@@ -1,14 +1,14 @@
 {
   "name": "streamee",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Easy stream transformation and composition for node.js that integrates seamlessly with Q promises",
   "keywords": ["stream", "promise", "functional", "transformation", "composition"],
   "author": "Alexandre Tamborrino <tamborrino.alexandre@gmail.com>",
-  "repository": "git://github.com/atamborrino/streamee.git",
+  "repository": "git://github.com/atamborrino/streamee.js.git",
   "main": "index",
-  "homepage": "https://github.com/atamborrino/streamee",
+  "homepage": "https://github.com/atamborrino/streamee.js",
   "bugs": {
-    "url": "https://github.com/atamborrino/streamee/issues"
+    "url": "https://github.com/atamborrino/streamee.js/issues"
   },
   "dependencies": {
     "underscore": "1.4.4",
