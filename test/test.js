@@ -81,7 +81,7 @@ beforeEach(function() {
 
   // binary
   chunksBin = [new Buffer([ 8, 6, 7, 5, 3, 0, 9]), new Buffer([ 8, 1, 7, 4, 3, 0, 3])];
-  readBin = new ReadableMock(chunksBin);
+  readBin = new ReadableMock(chunksBin);    
   sinkBin = [];
   writeBin = new WritableMock(sinkBin);
 

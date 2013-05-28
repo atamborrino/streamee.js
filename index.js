@@ -17,6 +17,7 @@ var obj = exports.obj = 'obj';
 
 var default_encoding = 'utf8';
 
+
 // map
 function Map(fromType, f) {
   if (!(this instanceof Map))
@@ -119,6 +120,7 @@ Filter.prototype._transform = function(chunk, encoding, done) {
   }
 };
 
+
 // interleave
 function Interleave(streams) {
   if (!(this instanceof Interleave))
@@ -145,6 +147,7 @@ Interleave.prototype._transform = function(chunk, encoding, done) {
   if (chunk) this.push(chunk);
   done();
 }
+
 
 // FlattenReadable
 function FlattenReadable(promiseStream) {

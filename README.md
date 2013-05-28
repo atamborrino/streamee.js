@@ -2,8 +2,8 @@
 
 Streamee.js is a set of stream transformers and composers for node.js that integrates seamlessly with [Q promises](https://github.com/kriskowal/q). It can be seen as a mix of [async](https://github.com/caolan/async) and [underscore.js](http://underscorejs.org/), but for streams!
 
-One of the most useful feature of streams is **back-pressure**: if the bottom of the stream pipeline is slow (for example the Web client), then the top will automatically push slowly (for example your database and/or Web server), so that the memory consumption is optimal in node.  
-streamee.js allows you to build very easily pipelines that compose and transform streams, so that you can keep back-pressure all the way long in a nice functional programming style. All transformation functions can return **Q promises** instead of direct values, which makes asynchronous operations less verbose and more functional (less callback hell!).
+One of the most useful feature of streams is **back-pressure**: if the bottom of the stream pipeline is slow (for example the Web client), then the top will automatically push slowly (for example your database and/or Web server). As a result memory and CPU consumption in node are optimal.  
+Streamee.js allows you to build very easily pipelines that compose and transform streams, so that you can keep back-pressure all along the way in a nice functional programming style. All transformation functions can return **Q promises** instead of direct values, which makes asynchronous operations less verbose and more functional (less callback hell!).
 
 Example:
 ```js
