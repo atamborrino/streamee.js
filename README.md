@@ -23,7 +23,7 @@ ee.pipeAndRun( // create a pipeline
     if (obj.intField > 3 && obj.intField < 10) { // filter
       return getPromiseOfData(obj); // async map by returning a Q promise
   }),
-  destination // Writable stream, for example a HTTP chunked response toward a Web client or a Websocket connection
+  destination // Writable stream, for example a HTTP chunked response towards a Web client or a Websocket connection
 );
 ```
 
