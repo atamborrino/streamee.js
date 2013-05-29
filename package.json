@@ -1,6 +1,6 @@
 {
   "name": "streamee",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Easy stream transformation and composition for node.js that integrates seamlessly with Q promises",
   "keywords": ["stream", "promise", "functional", "transformation", "composition"],
   "author": "Alexandre Tamborrino <tamborrino.alexandre@gmail.com>",

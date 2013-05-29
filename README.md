@@ -147,6 +147,19 @@ var collector = ee.collect(ee.str, function(str) {
 
 ---------------------------------------
 
+### ee.splitStr(separator)
+Re-chunk a string stream according to separator.
+
+**Arguments** 
+*  separator: string or regexp for separating the chunks
+
+**Example**
+```js
+var splitter = ee.splitStr('\n'); // one chunk is one line
+```
+
+---------------------------------------
+
 ### ee.encode(fromEncoding, toEncoding)
 Encode the chunks that were encoded in 'fromEncoding' to 'toEncoding'.
 

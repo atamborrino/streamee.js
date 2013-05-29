@@ -12,6 +12,7 @@ exports.interleave = Interleave;
 exports.flattenReadable = FlattenReadable;
 exports.encode = Encode;
 exports.concatenate = Concatenate;
+exports.splitStr = SplitStr;
 
 var bin = exports.bin = 'bin';
 var str = exports.str = 'str';
@@ -238,6 +239,33 @@ util.inherits(Concatenate, stream.Transform);
 
 Concatenate.prototype._transform = function(chunk, encoding, done) {
   if (chunk) this.push(chunk)
+  done();
+}
+
+// split
+function SplitStr(separator) {
+  if (!(this instanceof SplitStr))
+    return new SplitStr(separator);
+  stream.Transform.call(this, {objectMode: true});
+
+  this.separator = separator;
+  this.buffer = '';
+}
+
+util.inherits(SplitStr, stream.Transform);
+
+SplitStr.prototype._transform = function(chunk, encoding, done) {
+  var str = Buffer.isBuffer(chunk) ? chunk.toString(default_encoding) : chunk;
+  var chunks = (this.buffer + str).split(this.separator);
+  for (var i = 0; i < chunks.length - 1; ++i) {
+    if (chunks[i]) this.push(chunks[i]);
+  };
+  this.buffer = chunks[chunks.length - 1];
+  done();
+}
+
+SplitStr.prototype._flush = function(done) {
+  if (this.buffer) this.push(this.buffer);
   done();
 }
 

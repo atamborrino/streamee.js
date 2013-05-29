@@ -183,3 +183,27 @@ describe('Interleave', function() {
   })
 })
 
+describe('SplitStr', function() {
+  it('should split strings', function(done) {
+    read.pipe(ee.splitStr('o')).pipe(write).on('finish', function() {
+      sink.should.eql(_.compact(chunks.join('').split('o')));
+      done();
+    });
+  })
+})
+
+describe('Encode', function() {
+  it('should encode the stream from utf16-LE to utf8', function(done) {
+    var utf16 = _.map(chunks, function(chunk) {
+      return new Buffer(chunk, 'utf16le');
+    });
+    var utf8 = _.map(chunks, function(chunk) {
+      return new Buffer(chunk, 'utf8');
+    });
+    var readUtf16 = new ReadableMock(utf16);
+    readUtf16.pipe(ee.encode('utf16le', 'utf8')).pipe(write).on('finish', function() {
+      sink.should.eql(utf8);
+      done();
+    });
+  })
+})
