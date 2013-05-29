@@ -53,21 +53,6 @@ ReadableMock.prototype._read = function() {
   }
 };
 
-function arraysEqual(a, b) {
-  if (a === b) return true;
-  if (a == null || b == null) return false;
-  if (a.length != b.length) return false;
-
-  for (var i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false;
-  }
-  return true;
-}
-
-function jsonEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
-}
-
 var chunks, read, write, sink;
 var chunksObj, readObj, readObj2, writeObj, sinkObj;
 var chunksBin, readBin, writeBin, sinkBin;
@@ -184,6 +169,15 @@ describe('Concatenate', function() {
   it('should concatenate streams', function(done) {
     ee.concatenate([readObj, readObj2]).pipe(writeObj).on('finish', function() {
       sinkObj.should.eql(chunksObj.concat(chunksObj));
+      done();
+    });
+  })
+})
+
+describe('Interleave', function() {
+  it('should concatenate streams', function(done) {
+    ee.interleave([readObj, readObj2]).pipe(writeObj).on('finish', function() {
+      sinkObj.sort().should.eql(chunksObj.concat(chunksObj).sort());
       done();
     });
   })
