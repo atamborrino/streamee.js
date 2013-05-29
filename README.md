@@ -165,6 +165,17 @@ var mixedStream = ee.interleave([stream1, stream2]);
 
 ---------------------------------------
 
+### ee.concatenate(arrayOfReadableStreams)
+Concatenate sequentially the readable streams passed in the array. The resulting stream ends when the last stream of 
+arrayOfReadableStreams ends.
+
+**Example**
+```js
+var stream1AndThenStream2 = ee.concatenate([stream1, stream2]);
+```
+
+---------------------------------------
+
 ### ee.flattenReadable(readable)
 Flatten a Q.Promise[Readable] to a Readable stream.
 

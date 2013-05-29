@@ -211,12 +211,11 @@ function pipeAndRun() {
 }
 
 // concatenate
-function Concatenate(streams, interChunk) {
+function Concatenate(streams) {
   if (!(this instanceof Concatenate))
-    return new Concatenate(streams, interChunk);
+    return new Concatenate(streams);
   stream.Transform.call(this, {objectMode: true});
 
-  this.interChunk = interChunk;
   this.streams = streams;
   this.currentNb = -1;
   var self = this;
