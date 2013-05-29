@@ -2,6 +2,7 @@
 var stream = require('stream');
 var _ = require('underscore');
 var Q = require('q');
+var util = require('util');
 
 exports.map = Map;
 exports.collect = Map;
@@ -10,6 +11,7 @@ exports.pipeAndRun = pipeAndRun;
 exports.interleave = Interleave;
 exports.flattenReadable = FlattenReadable;
 exports.encode = Encode;
+exports.concatenate = Concatenate;
 
 var bin = exports.bin = 'bin';
 var str = exports.str = 'str';
@@ -29,8 +31,7 @@ function Map(fromType, f) {
   this.f = f;
 }
 
-Map.prototype = Object.create(
-  stream.Transform.prototype, { constructor: { value: Map }});
+util.inherits(Map, stream.Transform);
 
 Map.prototype._transform = function(chunk, encoding, done) {
   var self = this;
@@ -83,8 +84,7 @@ function Filter(fromType, f) {
   this.f = f;
 }
 
-Filter.prototype = Object.create(
-  stream.Transform.prototype, { constructor: { value: Filter }});
+util.inherits(Filter, stream.Transform);
 
 Filter.prototype._transform = function(chunk, encoding, done) {
   var self = this;
@@ -140,8 +140,7 @@ function Interleave(streams) {
 
 }
 
-Interleave.prototype = Object.create(
-  stream.Transform.prototype, { constructor: { value: Interleave }});
+util.inherits(Interleave, stream.Transform);
 
 Interleave.prototype._transform = function(chunk, encoding, done) {
   if (chunk) this.push(chunk);
@@ -167,8 +166,7 @@ function FlattenReadable(promiseStream) {
   .done();
 }
 
-FlattenReadable.prototype = Object.create(
-  stream.Transform.prototype, { constructor: { value: FlattenReadable }});
+util.inherits(FlattenReadable, stream.Transform);
 
 FlattenReadable.prototype._transform = function(chunk, encoding, done) {
   if (chunk) this.push(chunk);
@@ -186,8 +184,7 @@ function Encode(from, to) {
   this.to = to;
 }
 
-Encode.prototype = Object.create(
-  stream.Transform.prototype, { constructor: { value: Encode }});
+util.inherits(Encode, stream.Transform);
 
 Encode.prototype._transform = function(chunk, encoding, done) {
   try {
@@ -211,6 +208,38 @@ function pipeAndRun() {
     };
   }
   return pipeline;
+}
+
+// concatenate
+function Concatenate(streams, interChunk) {
+  if (!(this instanceof Concatenate))
+    return new Concatenate(streams, interChunk);
+  stream.Transform.call(this, {objectMode: true});
+
+  this.interChunk = interChunk;
+  this.streams = streams;
+  this.currentNb = -1;
+  var self = this;
+
+  function loop() {
+    self.currentNb++;
+    if (self.currentNb === self.streams.length) {
+      self.push(null);
+    } else {
+      self.currentStream = self.streams[self.currentNb];
+      self.currentStream.pipe(self, {end: false});
+      self.currentStream.on('end', loop);
+    } 
+  }
+
+  loop();
+}
+
+util.inherits(Concatenate, stream.Transform);
+
+Concatenate.prototype._transform = function(chunk, encoding, done) {
+  if (chunk) this.push(chunk)
+  done();
 }
 
 

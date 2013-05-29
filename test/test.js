@@ -69,7 +69,7 @@ function jsonEqual(a, b) {
 }
 
 var chunks, read, write, sink;
-var chunksObj, readObj, writeObj, sinkObj;
+var chunksObj, readObj, readObj2, writeObj, sinkObj;
 var chunksBin, readBin, writeBin, sinkBin;
 
 beforeEach(function() {
@@ -88,6 +88,7 @@ beforeEach(function() {
   //obj
   chunksObj = [{data: 'data1', val: 3}, {data: 'data2', val:5}];
   readObj = new ReadableMock(chunksObj, {encoding: 'utf8', objectMode: true}, 'obj');
+  readObj2 = new ReadableMock(chunksObj, {encoding: 'utf8', objectMode: true}, 'obj');
   sinkObj = [];
   writeObj = new WritableMock(sinkObj, {decodeStrings: false}, 'obj');
 })
@@ -96,7 +97,7 @@ describe('Map', function() {
   it('should map a string stream', function(done) {
     var mapper = function(chunk) {return chunk + "ok";};
     read.pipe(ee.map(ee.str, mapper)).pipe(write).on('finish', function() {
-      arraysEqual(_.map(chunks, mapper), sink).should.true;
+      _.map(chunks, mapper).should.eql(sink);
       done();
     });
   })
@@ -104,7 +105,7 @@ describe('Map', function() {
   it('should map a binary stream', function(done) {
     var mapper = function(chunk) {return chunk;};
     readBin.pipe(ee.map(ee.bin, mapper)).pipe(writeBin).on('finish', function() {
-      arraysEqual(_.map(chunksBin, mapper), sinkBin).should.true;
+      _.map(chunksBin, mapper).should.eql(sinkBin);
       done();
     });
   })
@@ -112,7 +113,7 @@ describe('Map', function() {
   it('should map a obj stream', function(done) {
     var mapper = function(chunk) {chunk.data = 'newData'; return chunk;};
     readObj.pipe(ee.map(ee.obj, mapper)).pipe(writeObj).on('finish', function() {
-      jsonEqual(_.map(chunksObj, mapper), sinkObj).should.true;
+      _.map(chunksObj, mapper).should.eql(sinkObj);
       done();
     });
   })
@@ -129,7 +130,7 @@ describe('Map', function() {
         return chunk;
     };
     readObj.pipe(ee.map(ee.obj, mapperAsync)).pipe(writeObj).on('finish', function() {
-      jsonEqual(_.map(chunksObj, mapper), sinkObj).should.true;
+      _.map(chunksObj, mapper).should.eql(sinkObj);
       done();
     });
   })
@@ -139,7 +140,7 @@ describe('Filter', function() {
   it('should filter a obj stream', function(done) {
     var filter = function(c) {return c.val === 3;};
     readObj.pipe(ee.filter(ee.obj, filter, ee.obj)).pipe(writeObj).on('finish', function() {
-      jsonEqual(_.filter(chunksObj,filter), sinkObj).should.true;
+      _.filter(chunksObj,filter).should.eql(sinkObj);
       done();
     });
   })
@@ -152,7 +153,7 @@ describe('Flatten', function() {
     });
     var stream = ee.flattenReadable(pStream);
     stream.pipe(write).on('finish', function() {
-      arraysEqual(chunks, sink).should.true;
+      chunks.should.eql(sink);
       done();
     });
   })
@@ -174,6 +175,15 @@ describe('PipeAndRun', function() {
     write.on('finish', function() {
       sink.should.have.length(1);
       (sink[0]).should.equal('data2');
+      done();
+    });
+  })
+})
+
+describe('Concatenate', function() {
+  it('should concatenate streams', function(done) {
+    ee.concatenate([readObj, readObj2]).pipe(writeObj).on('finish', function() {
+      sinkObj.should.eql(chunksObj.concat(chunksObj));
       done();
     });
   })
