@@ -63,6 +63,8 @@ function GETstream(url) {
 ```
 
 ## API
+All transformers and composers returned by streamee.js are instances of node 1.0+ Stream.
+
 All transformers (map, filter, collect...) take as first parameter the type in which you want to handle the chunk in the transformation function. ```ee.bin``` is buffer (binary data), ```ee.str``` is string and ```ee.obj``` is an object. If a chunk is not
 convertible to the asked type, it will be dropped.
 
@@ -83,7 +85,7 @@ Map each chunk.
 
 **Example**
 ```js
-ee.map(ee.str, function(str) {
+var mapper = ee.map(ee.str, function(str) {
   return str + ' is mapped to this message';
 })
 ```
@@ -102,7 +104,7 @@ function GET(url) {
   return deferred.promise;
 }
 
-ee.map(ee.obj, function(obj) {
+var mapper = ee.map(ee.obj, function(obj) {
   return GET(obj.url).then(function(body) {
     return obj + ' is mapped to ' + body;
   });
@@ -120,7 +122,7 @@ Keep only the chunks that pass the truth test f.
 
 **Example**
 ```js
-ee.map(ee.obj, function(obj) {
+var filter = ee.filter(ee.obj, function(obj) {
   return obj.aField === 'someValue';
 })
 ```
@@ -138,7 +140,7 @@ undefined), the chunk is not kept.
 
 **Example**
 ```js
-ee.collect(ee.str, function(str) {
+var collector = ee.collect(ee.str, function(str) {
   if (str.length > 10) return 'We keep ' + str + ' and map it to this message';
 })
 ```
